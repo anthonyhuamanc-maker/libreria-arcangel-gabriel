@@ -48,16 +48,16 @@ router.post('/', authMiddleware, async (req, res) => {
         const catId = await getCategoriaIdValido(categoria);
 
         try {
-            await db.query(
-                'INSERT INTO productos (nombre, categoria_id, categoria, detalle, stock, precio) VALUES (?, ?, ?, ?, ?, ?)',
-                [nombre, catId, categoria, detalle, Number(stock), precio]
-            );
-        } catch (e1) {
-            await db.query(
-                'INSERT INTO productos (nombre, categoria_id, detalle, stock, precio) VALUES (?, ?, ?, ?, ?)',
-                [nombre, catId, detalle, Number(stock), precio]
-            );
-        }
+      await db.query(
+        'INSERT INTO productos (nombre, categoria, descripcion, stock, precio) VALUES (?, ?, ?, ?, ?)',
+        [nombre, categoria, detalle, Number(stock), precio]
+      );
+    } catch (e1) {
+      await db.query(
+        'INSERT INTO productos (nombre, categoria, detalle, stock, precio) VALUES (?, ?, ?, ?, ?)',
+        [nombre, categoria, detalle, Number(stock), precio]
+      );
+    }
 
         res.status(201).json({ mensaje: 'Producto creado exitosamente' });
     } catch (error) {
