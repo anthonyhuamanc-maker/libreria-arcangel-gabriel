@@ -7,14 +7,19 @@ const authMiddleware = typeof authImport === 'function'
   ? authImport 
   : (authImport.authMiddleware || ((req, res, next) => next()));
 
-// Función auxiliar para garantizar un string de fecha ISO válido
-const obtenerFechaValida = (fechaRaw) => {
-  if (!fechaRaw) return new Date().toISOString();
-  const date = new Date(fechaRaw);
-  return isNaN(date.getTime()) ? new Date().toISOString() : date.toISOString();
+// Helper para convertir cualquier fecha nula o '0000-00-00' en un texto legible
+const formatearFechaLegible = (raw) => {
+  if (!raw || raw === '0000-00-00 00:00:00' || raw === '0000-00-00') {
+    return new Date().toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  }
+  const d = new Date(raw);
+  if (isNaN(d.getTime())) {
+    return new Date().toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  }
+  return d.toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric' });
 };
 
-// GET /api/cotizaciones - Estandariza cliente, email, teléfono, mensaje y fecha
+// GET /api/cotizaciones
 router.get('/', authMiddleware, async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM cotizaciones ORDER BY id DESC');
@@ -26,7 +31,7 @@ router.get('/', authMiddleware, async (req, res) => {
       const valMensaje = row.mensaje || row.consulta || row.detalle || row.descripcion || '';
       
       const rawFecha = row.fecha || row.fecha_creacion || row.created_at || row.createdAt;
-      const valFecha = obtenerFechaValida(rawFecha);
+      const fechaTexto = formatearFechaLegible(rawFecha);
 
       return {
         ...row,
@@ -40,10 +45,10 @@ router.get('/', authMiddleware, async (req, res) => {
         telefono: valTelefono,
         mensaje: valMensaje,
         consulta: valMensaje,
-        fecha: valFecha,
-        created_at: valFecha,
-        fecha_creacion: valFecha,
-        createdAt: valFecha
+        fecha: fechaTexto,
+        created_at: fechaTexto,
+        fecha_creacion: fechaTexto,
+        createdAt: fechaTexto
       };
     });
 
@@ -85,7 +90,6 @@ router.post('/', async (req, res) => {
     const msgCol = dbCols.find(c => ['mensaje', 'consulta', 'detalle', 'descripcion'].includes(c.toLowerCase()));
     if (msgCol) fieldsToInsert[msgCol] = valMensaje;
 
-    // Guardar fecha actual si existe la columna de fecha en MySQL
     const dateCol = dbCols.find(c => ['fecha', 'created_at', 'fecha_creacion', 'createdat'].includes(c.toLowerCase()));
     if (dateCol) fieldsToInsert[dateCol] = new Date();
 

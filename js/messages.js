@@ -45,7 +45,11 @@ async function cargarCotizaciones() {
         }
 
         cotizaciones.forEach(cot => {
-            const fecha = new Date(cot.fecha_envio).toLocaleString('es-PE');
+            const rawFecha = cot.fecha_envio || cot.fecha || cot.created_at || cot.fecha_creacion;
+const d = rawFecha ? new Date(rawFecha) : new Date();
+const fecha = isNaN(d.getTime()) 
+  ? new Date().toLocaleDateString('es-PE') 
+  : d.toLocaleDateString('es-PE');
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td class="ps-3"><small class="text-muted">${fecha}</small></td>
