@@ -21,11 +21,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 const response = await fetch('https://libreria-arcangel-gabriel-44ro.onrender.com/api/cotizaciones', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        cliente_nombre: nombre,
-                        telefono: telefono,
-                        email: email || 'Sin correo',
-                        mensaje: mensaje
+                   body: JSON.stringify({
+                    nombre: nombre,
+                    cliente_nombre: nombre,
+                    telefono: telefono,
+                    email: email || 'Sin correo',
+                    mensaje: mensaje
                     })
                 });
 
