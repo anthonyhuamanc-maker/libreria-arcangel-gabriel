@@ -7,19 +7,35 @@ const authMiddleware = typeof authImport === 'function'
   ? authImport 
   : (authImport.authMiddleware || ((req, res, next) => next()));
 
-// GET /api/cotizaciones - Estandariza las columnas devueltas hacia el frontend
+// GET /api/cotizaciones - Devuelve todos los alias posibles de propiedades
 router.get('/', authMiddleware, async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM cotizaciones ORDER BY id DESC');
     
-    const cotizacionesEstandarizadas = rows.map(row => ({
-      id: row.id,
-      nombre: row.nombre || row.cliente_nombre || row.nombre_cliente || row.cliente || 'Sin nombre',
-      telefono: row.telefono || row.celular || row.whatsapp || '',
-      email: row.email || row.correo || row.email_cliente || '',
-      mensaje: row.mensaje || row.consulta || row.detalle || row.descripcion || '',
-      fecha: row.fecha || row.fecha_creacion || row.created_at || row.createdAt || new Date().toISOString()
-    }));
+    const cotizacionesEstandarizadas = rows.map(row => {
+      const valNombre = row.nombre || row.cliente_nombre || row.nombre_cliente || row.cliente || 'Cliente';
+      const valEmail = row.email || row.correo || row.email_cliente || '';
+      const valTelefono = row.telefono || row.celular || row.whatsapp || '';
+      const valMensaje = row.mensaje || row.consulta || row.detalle || row.descripcion || '';
+      const valFecha = row.fecha || row.fecha_creacion || row.created_at || row.createdAt || new Date();
+
+      return {
+        ...row,
+        id: row.id,
+        nombre: valNombre,
+        cliente_nombre: valNombre,
+        nombre_cliente: valNombre,
+        cliente: valNombre,
+        email: valEmail,
+        correo: valEmail,
+        telefono: valTelefono,
+        mensaje: valMensaje,
+        consulta: valMensaje,
+        fecha: valFecha,
+        created_at: valFecha,
+        fecha_creacion: valFecha
+      };
+    });
 
     res.json(cotizacionesEstandarizadas);
   } catch (error) {
