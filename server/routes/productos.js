@@ -1,53 +1,29 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
-const { authMiddleware, esAdmin } = require('../middleware/authMiddleware');
+const authMiddleware = require('../middleware/authMiddleware');
 
-// Función para obtener ID de categoría válido
-async function getCategoriaIdValido(nombreCat) {
-    try {
-        const [rows] = await db.query('SELECT * FROM categorias');
-        if (rows.length > 0) {
-            const encontrada = rows.find(c => 
-                (c.nombre && c.nombre.toLowerCase() === nombreCat.toLowerCase()) ||
-                (c.nombre_categoria && c.nombre_categoria.toLowerCase() === nombreCat.toLowerCase()) ||
-                (c.categoria && c.categoria.toLowerCase() === nombreCat.toLowerCase())
-            );
-            if (encontrada) return encontrada.id || encontrada.id_categoria || rows[0].id;
-            return rows[0].id || rows[0].id_categoria || 1;
-        }
-
-        const [result] = await db.query('INSERT INTO categorias (nombre) VALUES (?)', [nombreCat || 'Papelería']);
-        return result.insertId;
-    } catch (err) {
-        console.error('Error al obtener categoria_id:', err.message);
-        return 1;
-    }
-}
-
-// GET: Obtener todos los productos (Público)
+// GET /api/productos - Obtener todos los productos
 router.get('/', async (req, res) => {
   try {
-    const [productos] = await db.query('SELECT * FROM productos');
-    res.json(productos);
+    const [rows] = await db.query('SELECT * FROM productos ORDER BY id DESC');
+    res.json(rows);
   } catch (error) {
-    console.error('Error al obtener productos:', error);
+    console.error('Error MySQL GET:', error.message);
     res.status(500).json({ mensaje: 'Error al obtener productos' });
   }
 });
 
-// POST: Crear nuevo producto (Protegido)
+// POST /api/productos - Crear un producto
 router.post('/', authMiddleware, async (req, res) => {
-    const { nombre, categoria, detalle, stock, precio } = req.body;
+  const { nombre, categoria, detalle, stock, precio } = req.body;
 
-    if (!nombre || !categoria || !detalle || stock === undefined || stock === null || !precio) {
-        return res.status(400).json({ mensaje: 'Todos los campos son obligatorios.' });
-    }
+  if (!nombre || !categoria || !detalle || stock === undefined || stock === null || !precio) {
+    return res.status(400).json({ mensaje: 'Todos los campos son obligatorios.' });
+  }
 
+  try {
     try {
-        const catId = await getCategoriaIdValido(categoria);
-
-        try {
       await db.query(
         'INSERT INTO productos (nombre, categoria, descripcion, stock, precio) VALUES (?, ?, ?, ?, ?)',
         [nombre, categoria, detalle, Number(stock), precio]
@@ -59,14 +35,14 @@ router.post('/', authMiddleware, async (req, res) => {
       );
     }
 
-        res.status(201).json({ mensaje: 'Producto creado exitosamente' });
-    } catch (error) {
-        console.error('Error MySQL POST:', error.message);
-        res.status(500).json({ mensaje: 'Error al guardar en BD: ' + error.message });
-    }
+    res.status(201).json({ mensaje: 'Producto creado exitosamente' });
+  } catch (error) {
+    console.error('Error MySQL POST:', error.message);
+    res.status(500).json({ mensaje: 'Error al guardar en BD: ' + error.message });
+  }
 });
 
-// PUT: Actualizar producto (Protegido)
+// PUT /api/productos/:id - Actualizar un producto
 router.put('/:id', authMiddleware, async (req, res) => {
   const { id } = req.params;
   const { nombre, categoria, detalle, stock, precio } = req.body;
@@ -95,15 +71,20 @@ router.put('/:id', authMiddleware, async (req, res) => {
   }
 });
 
-// DELETE: Eliminar producto (Protegido por rol Administrador)
-router.delete('/:id', authMiddleware, esAdmin, async (req, res) => {
-    const { id } = req.params;
-    try {
-        await db.query('DELETE FROM productos WHERE id = ?', [id]);
-        res.json({ mensaje: 'Producto eliminado correctamente por Administrador' });
-    } catch (error) {
-        res.status(500).json({ mensaje: 'Error al eliminar producto' });
+// DELETE /api/productos/:id - Eliminar un producto
+router.delete('/:id', authMiddleware, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const [result] = await db.query('DELETE FROM productos WHERE id = ?', [id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ mensaje: 'Producto no encontrado' });
     }
+    res.json({ mensaje: 'Producto eliminado exitosamente' });
+  } catch (error) {
+    console.error('Error MySQL DELETE:', error.message);
+    res.status(500).json({ mensaje: 'Error al eliminar el producto' });
+  }
 });
 
 module.exports = router;
