@@ -6,7 +6,7 @@ const { authMiddleware } = require('../middleware/authMiddleware');
 // GET: Obtener todas las cotizaciones (Protegido)
 router.get('/', authMiddleware, async (req, res) => {
     try {
-        const [rows] = await db.query('SELECT * FROM cotizaciones ORDER BY fecha_envio DESC');
+        const [rows] = await db.query('SELECT * FROM cotizaciones ORDER BY fecha DESC');
         res.json(rows);
     } catch (error) {
         console.error(error);
