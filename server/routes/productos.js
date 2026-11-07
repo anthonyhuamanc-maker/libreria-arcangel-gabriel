@@ -27,13 +27,13 @@ async function getCategoriaIdValido(nombreCat) {
 
 // GET: Obtener todos los productos (Público)
 router.get('/', async (req, res) => {
-    try {
-        const [rows] = await db.query('SELECT * FROM productos');
-        res.json(rows);
-    } catch (error) {
-        console.error('Error GET productos:', error);
-        res.status(500).json({ mensaje: 'Error al obtener productos' });
-    }
+  try {
+    const [productos] = await db.query('SELECT * FROM productos');
+    res.json(productos);
+  } catch (error) {
+    console.error('Error al obtener productos:', error);
+    res.status(500).json({ mensaje: 'Error al obtener productos' });
+  }
 });
 
 // POST: Crear nuevo producto (Protegido)
