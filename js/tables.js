@@ -42,7 +42,7 @@ async function cargarProductos() {
                 <td class="ps-3 fw-bold text-muted">${prod.id}</td>
                 <td class="fw-bold">${prod.nombre}</td>
                 <td><span class="badge bg-secondary">${prod.categoria || 'Papelería'}</span></td>
-                <td><small class="text-muted">${prod.detalle}</small></td>
+                <td><small class="text-muted">${prod.descripcion || 'Sin descripción'}</small></td>
                 <td>${badgeStock}</td>
                 <td class="fw-semibold">${prod.precio}</td>
                 <td class="text-end pe-3">
