@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panel Administrativo - Librería Arcángel Gabriel</title>
+
+    <!-- Bootstrap 5.3 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- FontAwesome Iconos -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body class="bg-light">
+    <!-- Redirección de seguridad si no hay token -->
+    <script>
+      if (!localStorage.getItem('token')) {
+        window.location.href = 'index.html';
+      }
+    </script>
+
+    <!-- BARRA DE NAVEGACIÓN ADMINISTRATIVA -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm py-3">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="#">
+          <i class="fa-solid fa-user-shield text-warning fs-4"></i>
+          <span>Arcángel Gabriel | Panel Admin</span>
+        </a>
+
+        <div class="d-flex align-items-center gap-3 ms-auto">
+          <span class="text-white-50 d-none d-sm-inline small">
+            <i class="fa-solid fa-circle-user text-success me-1"></i>
+            <span id="userNombre">Administrador</span>
+          </span>
+          <a href="index.html" class="btn btn-outline-light btn-sm fw-semibold">
+            <i class="fa-solid fa-globe me-1"></i> Ver Sitio Web
+          </a>
+          <button id="btnLogout" class="btn btn-danger btn-sm fw-bold">
+            <i class="fa-solid fa-right-from-bracket me-1"></i> Cerrar Sesión
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="container py-4">
+      <!-- 1. TARJETAS DE MÉTRICAS (3 TARJETAS) -->
+      <div class="row g-3 mb-4">
+        <!-- Total Productos -->
+        <div class="col-12 col-md-4">
+          <div class="card border-0 shadow-sm p-3 bg-white border-start border-primary border-4 rounded-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <span class="text-muted small fw-semibold text-uppercase">Total Productos</span>
+                <h3 id="totalProductos" class="fw-bold mb-0 text-primary">0</h3>
+              </div>
+              <div class="bg-primary-subtle text-primary p-3 rounded-circle">
+                <i class="fa-solid fa-boxes-stacked fs-4"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cotizaciones Web -->
+        <div class="col-12 col-md-4">
+          <div class="card border-0 shadow-sm p-3 bg-white border-start border-success border-4 rounded-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <span class="text-muted small fw-semibold text-uppercase">Cotizaciones Web</span>
+                <h3 id="totalCotizaciones" class="fw-bold mb-0 text-success">0</h3>
+              </div>
+              <div class="bg-success-subtle text-success p-3 rounded-circle">
+                <i class="fa-brands fa-whatsapp fs-4"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alertas de Stock Bajo -->
+        <div class="col-12 col-md-4">
+          <div class="card border-0 shadow-sm p-3 bg-white border-start border-warning border-4 rounded-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <span class="text-muted small fw-semibold text-uppercase">Alertas de Stock Bajo</span>
+                <h3 id="stockBajoAlertas" class="fw-bold mb-0 text-warning">0</h3>
+              </div>
+              <div class="bg-warning-subtle text-warning p-3 rounded-circle">
+                <i class="fa-solid fa-triangle-exclamation fs-4"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. GESTIÓN DE PRODUCTOS (CRUD) -->
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white py-3 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2">
+          <div>
+            <h5 class="fw-bold mb-0 text-dark">Gestión de Inventario y Catálogo</h5>
+            <small class="text-muted">Administra los productos visibles en el catálogo web</small>
+          </div>
+          <button id="btnNuevoProducto" class="btn btn-primary fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalProducto">
+            <i class="fa-solid fa-plus me-1"></i> Nuevo Producto
+          </button>
+        </div>
+
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th class="ps-3">ID</th>
+                  <th>PRODUCTO</th>
+                  <th>CATEGORÍA</th>
+                  <th>DETALLE</th>
+                  <th>STOCK</th>
+                  <th>PRECIO</th>
+                  <th class="text-end pe-3">ACCIONES</th>
+                </tr>
+              </thead>
+              <tbody id="tablaProductosBody">
+                <!-- Se puebla dinámicamente desde js/tables.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. SOLICITUDES Y COTIZACIONES WEB -->
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2">
+          <div>
+            <h5 class="fw-bold mb-0 text-dark">Solicitudes y Cotizaciones Web</h5>
+            <small class="text-muted">Mensajes enviados por los clientes desde el formulario de contacto</small>
+          </div>
+          <button id="btnLimpiarCotizaciones" class="btn btn-outline-danger btn-sm fw-bold">
+            <i class="fa-solid fa-trash-can me-1"></i> Limpiar Mensajes
+          </button>
+        </div>
+
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th class="ps-3">FECHA</th>
+                  <th>CLIENTE</th>
+                  <th>TELÉFONO</th>
+                  <th>EMAIL</th>
+                  <th>MENSAJE / CONSULTA</th>
+                </tr>
+              </thead>
+              <tbody id="tablaCotizacionesBody">
+                <!-- Se puebla dinámicamente desde js/messages.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- MODAL REGISTRAR / EDITAR PRODUCTO -->
+    <div class="modal fade" id="modalProducto" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title fw-bold" id="modalProductoTitle">
+              <i class="fa-solid fa-box me-2"></i>Registrar Producto
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body p-4">
+            <form id="formProducto">
+              <input type="hidden" id="productoId" />
+
+              <div class="mb-3">
+                <label for="nombreProducto" class="form-label fw-bold small text-muted text-uppercase">Nombre del Producto *</label>
+                <input type="text" id="nombreProducto" class="form-control" placeholder="Ej. Cuaderno A4 100 Hojas" required />
+              </div>
+
+              <div class="row g-3 mb-3">
+                <div class="col-12 col-md-6">
+                  <label for="categoriaProducto" class="form-label fw-bold small text-muted text-uppercase">Categoría *</label>
+                  <select id="categoriaProducto" class="form-select" required>
+                    <option value="Papelería">Papelería</option>
+                    <option value="Packs">Packs</option>
+                    <option value="Servicio">Servicio</option>
+                    <option value="Arte">Arte</option>
+                    <option value="Otros">Otros</option>
+                  </select>
+                </div>
+                <div class="col-12 col-md-6">
+                  <label for="precioProducto" class="form-label fw-bold small text-muted text-uppercase">Precio *</label>
+                  <input type="text" id="precioProducto" class="form-control" placeholder="Ej. S/ 6.50 o Cotizar" required />
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="stockProducto" class="form-label fw-bold small text-muted text-uppercase">Cantidad en Stock *</label>
+                <input type="number" id="stockProducto" class="form-control" min="0" placeholder="Ej. 50" required />
+              </div>
+
+              <div class="mb-3">
+                <label for="detalleProducto" class="form-label fw-bold small text-muted text-uppercase">Detalle o Descripción *</label>
+                <textarea id="detalleProducto" rows="3" class="form-control" placeholder="Ej. Marca Standford, hojas cuadriculadas..." required></textarea>
+              </div>
+
+              <div class="d-flex justify-content-end gap-2 mt-4">
+                <button type="button" class="btn btn-secondary fw-semibold" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary fw-bold">Guardar Producto</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Script para cerrar sesión -->
+    <script>
+      document.getElementById('btnLogout')?.addEventListener('click', () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('usuario');
+        window.location.href = 'index.html';
+      });
+    </script>
+
+    <!-- Bootstrap 5.3 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Scripts del Dashboard -->
+    <script src="js/tables.js"></script>
+    <script src="js/messages.js"></script>
+  </body>
+</html>

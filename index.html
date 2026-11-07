@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Librería Arcángel Gabriel</title>
+
+    <!-- Leaflet CSS para Mapas Interactivos -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- Bootstrap 5.3 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Iconos de FontAwesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body class="bg-light text-dark">
+    <!-- 1. BARRA DE NAVEGACIÓN -->
+    <header class="sticky-top">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+        <div class="container">
+          <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="#">
+            <i class="fa-solid fa-book-open text-warning fs-4"></i>
+            <span>Arcángel Gabriel</span>
+          </a>
+
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto me-3">
+              <li class="nav-item">
+                <a class="nav-link active" href="#inicio">Inicio</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#catalogo">Catálogo</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#ubicacion">Ubicación</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#contacto">Contacto</a>
+              </li>
+            </ul>
+            <button id="btnPanelAdmin" class="btn btn-warning text-dark fw-bold btn-sm d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#modalLogin">
+              <i class="fa-solid fa-user-gear me-1"></i> Panel Admin
+            </button>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- 2. SECCIÓN PRINCIPAL / HERO -->
+    <section id="inicio" class="bg-primary text-white py-5">
+      <div class="container text-center py-4">
+        <span class="badge bg-light text-primary text-uppercase mb-3 px-3 py-2 rounded-pill fw-semibold">
+          Frente a la I.E. 6024 José María Arguedas
+        </span>
+        <h1 class="display-5 fw-bold mb-3">
+          Librería & Servicios Arcángel Gabriel
+        </h1>
+        <p class="lead mb-4 mx-auto" style="max-width: 700px">
+          Todo en útiles escolares, listas completas por grado, impresiones
+          rápidas y anillados en Villa María del Triunfo.
+        </p>
+        <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+          <a href="#catalogo" class="btn btn-warning btn-lg fw-bold text-dark shadow-sm">
+            <i class="fa-solid fa-store me-2"></i>Ver Catálogo
+          </a>
+          <a
+            href="https://wa.me/51999999999?text=Hola,%20deseo%20cotizar%20una%20lista%20de%20útiles"
+            target="_blank"
+            class="btn btn-success btn-lg fw-bold shadow-sm"
+          >
+            <i class="fa-brands fa-whatsapp me-2"></i>Cotizar por WhatsApp
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. CATÁLOGO DESTACADO DE PRODUCTOS -->
+    <section id="catalogo" class="py-5 container">
+      <div class="text-center mb-5">
+        <h2 class="fw-bold text-primary">Catálogo de Productos y Servicios</h2>
+        <p class="text-muted">
+          Encuentra los materiales escolares más solicitados y nuestros servicios de imprenta
+        </p>
+      </div>
+
+      <div class="row g-4">
+        <!-- Producto 1 -->
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="card h-100 shadow-sm border-0">
+            <div class="card-img-top bg-light text-center py-4">
+              <i class="fa-solid fa-book display-4 text-warning"></i>
+            </div>
+            <div class="card-body d-flex flex-column">
+              <span class="badge bg-primary-subtle text-primary mb-2 align-self-start">Papelería</span>
+              <h5 class="card-title fw-bold">Cuaderno Universitario A4</h5>
+              <p class="card-text text-muted small flex-grow-1">
+                Standford / Standart 100 hojas cuadriculadas.
+              </p>
+              <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                <span class="fs-5 fw-bold text-dark">S/ 6.50</span>
+                <a
+                  href="https://wa.me/51999999999?text=Deseo%20comprar%20Cuaderno%20Universitario"
+                  target="_blank"
+                  class="btn btn-outline-success btn-sm fw-semibold"
+                >
+                  Pedir <i class="fa-brands fa-whatsapp ms-1"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Producto 2 -->
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="card h-100 shadow-sm border-0">
+            <div class="card-img-top bg-light text-center py-4">
+              <i class="fa-solid fa-clipboard-list display-4 text-primary"></i>
+            </div>
+            <div class="card-body d-flex flex-column">
+              <span class="badge bg-success-subtle text-success mb-2 align-self-start">Packs</span>
+              <h5 class="card-title fw-bold">Lista Escolar Completa</h5>
+              <p class="card-text text-muted small flex-grow-1">
+                Armamos tu lista según el grado escolar (Primaria/Secundaria).
+              </p>
+              <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                <span class="fs-5 fw-bold text-dark">Cotizar</span>
+                <a
+                  href="https://wa.me/51999999999?text=Deseo%20cotizar%20mi%20lista%20escolar"
+                  target="_blank"
+                  class="btn btn-outline-success btn-sm fw-semibold"
+                >
+                  Enviar Foto <i class="fa-brands fa-whatsapp ms-1"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Producto 3 -->
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="card h-100 shadow-sm border-0">
+            <div class="card-img-top bg-light text-center py-4">
+              <i class="fa-solid fa-print display-4 text-info"></i>
+            </div>
+            <div class="card-body d-flex flex-column">
+              <span class="badge bg-info-subtle text-info mb-2 align-self-start">Servicio</span>
+              <h5 class="card-title fw-bold">Impresiones y Copias</h5>
+              <p class="card-text text-muted small flex-grow-1">
+                Impresión B/N y a color, anillados y espiralados rápidos.
+              </p>
+              <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                <span class="fs-6 fw-bold text-dark">Desde S/ 0.20</span>
+                <a
+                  href="https://wa.me/51999999999?text=Deseo%20enviar%20un%20archivo%20para%20impresion"
+                  target="_blank"
+                  class="btn btn-outline-success btn-sm fw-semibold"
+                >
+                  Enviar PDF <i class="fa-brands fa-whatsapp ms-1"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Producto 4 -->
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="card h-100 shadow-sm border-0">
+            <div class="card-img-top bg-light text-center py-4">
+              <i class="fa-solid fa-paintbrush display-4 text-danger"></i>
+            </div>
+            <div class="card-body d-flex flex-column">
+              <span class="badge bg-danger-subtle text-danger mb-2 align-self-start">Arte</span>
+              <h5 class="card-title fw-bold">Set de Témperas y Pinceles</h5>
+              <p class="card-text text-muted small flex-grow-1">
+                Kit Faber Castell / Artesesco para manualidades escolares.
+              </p>
+              <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                <span class="fs-5 fw-bold text-dark">S/ 12.00</span>
+                <a
+                  href="https://wa.me/51999999999?text=Deseo%20comprar%20Set%20de%20Temperas"
+                  target="_blank"
+                  class="btn btn-outline-success btn-sm fw-semibold"
+                >
+                  Pedir <i class="fa-brands fa-whatsapp ms-1"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. UBICACIÓN Y GEOLOCALIZACIÓN -->
+    <section id="ubicacion" class="bg-body-tertiary py-5">
+      <div class="container">
+        <div class="row align-items-center g-4">
+          <!-- Columna Información -->
+          <div class="col-12 col-lg-5">
+            <span class="text-primary fw-bold text-uppercase small">Ubicación Estratégica</span>
+            <h2 class="fw-bold mt-1 mb-3">¿Dónde nos encontramos?</h2>
+            <p class="text-muted mb-4">
+              Estamos ubicados estratégicamente en el distrito de Villa María del Triunfo, justo al frente de la puerta principal del colegio <strong>I.E. 6024 José María Arguedas</strong>.
+            </p>
+            <div class="d-flex align-items-start gap-3 mb-3">
+              <i class="fa-solid fa-location-dot text-warning fs-5 mt-1"></i>
+              <div>
+                <strong>Dirección:</strong> Jr. Unión Mz. K3 Lote 13 (Frente a I.E. 6024), Villa María del Triunfo.
+              </div>
+            </div>
+            <div class="d-flex align-items-start gap-3 mb-4">
+              <i class="fa-solid fa-clock text-warning fs-5 mt-1"></i>
+              <div>
+                <strong>Horario de Atención:</strong> Lunes a Viernes de 7:00 AM a 7:00 PM | Sábados de 8:00 AM a 2:00 PM.
+              </div>
+            </div>
+
+            <!-- Botón de Geolocalización -->
+            <button id="btnGeolocalizar" class="btn btn-outline-primary w-100 py-2 fw-bold shadow-sm">
+              <i class="fa-solid fa-crosshairs me-2"></i>Usar mi ubicación actual
+            </button>
+            <small id="geoStatus" class="form-text text-muted d-block text-center mt-2"></small>
+          </div>
+
+          <!-- Columna Mapa Interactivo Leaflet -->
+          <div class="col-12 col-lg-7">
+            <div class="card p-2 shadow-sm border-0">
+              <div id="map" class="rounded" style="height: 380px; width: 100%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. FORMULARIO DE CONTACTO Y COTIZACIÓN -->
+    <section id="contacto" class="py-5 container" style="max-width: 800px">
+      <div class="text-center mb-4">
+        <h2 class="fw-bold text-primary">Contáctanos o Solicita Cotización</h2>
+        <p class="text-muted">
+          Envíanos tus dudas o la lista de útiles que necesitas
+        </p>
+      </div>
+
+      <div class="card shadow-sm border-0 p-4">
+        <form id="contactForm">
+          <div id="formAlert" class="alert d-none mb-3" role="alert"></div>
+
+          <div class="mb-3">
+            <label for="nombre" class="form-label fw-semibold text-muted small text-uppercase">Nombre Completo *</label>
+            <input type="text" id="nombre" class="form-control" placeholder="Ej. Juan Pérez" required />
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-12 col-md-6">
+              <label for="telefono" class="form-label fw-semibold text-muted small text-uppercase">Teléfono / WhatsApp *</label>
+              <input type="text" id="telefono" class="form-control" placeholder="Ej. 999888777" required />
+            </div>
+            <div class="col-12 col-md-6">
+              <label for="email" class="form-label fw-semibold text-muted small text-uppercase">Correo Electrónico</label>
+              <input type="email" id="email" class="form-control" placeholder="ejemplo@correo.com" />
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label for="mensaje" class="form-label fw-semibold text-muted small text-uppercase">Consulta o Lista de Útiles *</label>
+            <textarea id="mensaje" rows="4" class="form-control" placeholder="Escribe aquí los productos que necesitas..." required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">
+            Enviar Solicitud
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-dark text-light py-3 text-center small">
+      <div class="container">
+        <p class="mb-0">
+          © 2026 Librería Arcángel Gabriel - Villa María del Triunfo. Todos los derechos reservados.
+        </p>
+      </div>
+    </footer>
+
+    <!-- MODAL DE INICIO DE SESIÓN -->
+    <div class="modal fade" id="modalLogin" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-user-shield text-warning me-2"></i>Acceso Administrativo</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Correo Electrónico</label>
+                            <input type="email" id="loginEmail" class="form-control" placeholder="admin@arcangel.com" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Contraseña</label>
+                            <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 fw-bold py-2 mt-2">Ingresar al Panel</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Leaflet JS para Mapas -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Script del Formulario -->
+    <script src="js/validation.js"></script>
+
+    <!-- Script de Inicialización de Mapa y Geolocalización -->
+    <!-- Script de Inicialización de Mapa y Geolocalización -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        // Coordenadas exactas obtenidas de Google Maps
+        const latLocal = -12.196202;
+        const lngLocal = -76.929241;
+
+        // 1. Inicializar Mapa centrado con zoom 18
+        const map = L.map('map').setView([latLocal, lngLocal], 18);
+
+        // 2. Capa visual OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; OpenStreetMap'
+        }).addTo(map);
+
+        // 3. Marcador oficial en el local
+        L.marker([latLocal, lngLocal]).addTo(map)
+          .bindPopup('<b>Librería Arcángel Gabriel</b><br>Jr. Unión Mz. K3 Lote 13<br>(Frente a I.E. 6024)')
+          .openPopup();
+
+        // 4. Servicio de Geolocalización para el cliente
+        const btnGeo = document.getElementById('btnGeolocalizar');
+        const geoStatus = document.getElementById('geoStatus');
+
+        if (btnGeo) {
+          btnGeo.addEventListener('click', () => {
+            if (!navigator.geolocation) {
+              geoStatus.className = 'form-text text-danger d-block text-center mt-2';
+              geoStatus.innerText = 'La geolocalización no es soportada por tu navegador.';
+              return;
+            }
+
+            geoStatus.className = 'form-text text-primary d-block text-center mt-2';
+            geoStatus.innerText = 'Obteniendo tu ubicación...';
+
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                const userLat = position.coords.latitude;
+                const userLng = position.coords.longitude;
+
+                map.setView([userLat, userLng], 16);
+                L.marker([userLat, userLng]).addTo(map)
+                  .bindPopup('<b>Tu Ubicación Actual</b><br>Punto detectado para envío.')
+                  .openPopup();
+
+                geoStatus.className = 'form-text text-success d-block text-center mt-2';
+                geoStatus.innerText = '¡Ubicación detectada exitosamente!';
+              },
+              (error) => {
+                geoStatus.className = 'form-text text-danger d-block text-center mt-2';
+                geoStatus.innerText = 'No se pudo obtener el acceso a tu ubicación.';
+              }
+            );
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
