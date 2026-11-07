@@ -3,12 +3,11 @@ const router = express.Router();
 const db = require('../config/db');
 const authImport = require('../middleware/authMiddleware');
 
-// Validar la exportación del middleware para evitar errores de arranque en Express
-const authMiddleware = typeof authImport === 'function'
-  ? authImport
-  : (authImport.authMiddleware || authImport.verifyToken || ((req, res, next) => next()));
+const authMiddleware = typeof authImport === 'function' 
+  ? authImport 
+  : (authImport.authMiddleware || ((req, res, next) => next()));
 
-// GET /api/cotizaciones - Obtener todas las cotizaciones/mensajes
+// GET /api/cotizaciones
 router.get('/', authMiddleware, async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM cotizaciones ORDER BY id DESC');
@@ -19,7 +18,7 @@ router.get('/', authMiddleware, async (req, res) => {
   }
 });
 
-// POST /api/cotizaciones - Crear una nueva cotización desde la web
+// POST /api/cotizaciones
 router.post('/', async (req, res) => {
   const { nombre, email, telefono, mensaje } = req.body;
 
@@ -39,7 +38,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// DELETE /api/cotizaciones - Limpiar todas las cotizaciones
+// DELETE /api/cotizaciones
 router.delete('/', authMiddleware, async (req, res) => {
   try {
     await db.query('DELETE FROM cotizaciones');
