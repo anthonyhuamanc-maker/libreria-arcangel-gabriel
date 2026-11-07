@@ -68,33 +68,31 @@ router.post('/', authMiddleware, async (req, res) => {
 
 // PUT: Actualizar producto (Protegido)
 router.put('/:id', authMiddleware, async (req, res) => {
-    const { id } = req.params;
-    const { nombre, categoria, detalle, stock, precio } = req.body;
+  const { id } = req.params;
+  const { nombre, categoria, detalle, stock, precio } = req.body;
 
-    if (!nombre || !categoria || !detalle || stock === undefined || stock === null || !precio) {
-        return res.status(400).json({ mensaje: 'Todos los campos son obligatorios.' });
-    }
+  if (!nombre || !categoria || !detalle || stock === undefined || stock === null || !precio) {
+    return res.status(400).json({ mensaje: 'Todos los campos son obligatorios.' });
+  }
 
+  try {
     try {
-        const catId = await getCategoriaIdValido(categoria);
-
-        try {
-            await db.query(
-                'UPDATE productos SET nombre = ?, categoria_id = ?, categoria = ?, detalle = ?, stock = ?, precio = ? WHERE id = ?',
-                [nombre, catId, categoria, detalle, Number(stock), precio, id]
-            );
-        } catch (e1) {
-            await db.query(
-                'UPDATE productos SET nombre = ?, categoria_id = ?, detalle = ?, stock = ?, precio = ? WHERE id = ?',
-                [nombre, catId, detalle, Number(stock), precio, id]
-            );
-        }
-
-        res.json({ mensaje: 'Producto actualizado exitosamente' });
-    } catch (error) {
-        console.error('Error MySQL PUT:', error.message);
-        res.status(500).json({ mensaje: 'Error al actualizar: ' + error.message });
+      await db.query(
+        'UPDATE productos SET nombre = ?, categoria = ?, descripcion = ?, stock = ?, precio = ? WHERE id = ?',
+        [nombre, categoria, detalle, Number(stock), precio, id]
+      );
+    } catch (e1) {
+      await db.query(
+        'UPDATE productos SET nombre = ?, categoria = ?, detalle = ?, stock = ?, precio = ? WHERE id = ?',
+        [nombre, categoria, detalle, Number(stock), precio, id]
+      );
     }
+
+    res.json({ mensaje: 'Producto actualizado exitosamente' });
+  } catch (error) {
+    console.error('Error MySQL PUT:', error.message);
+    res.status(500).json({ mensaje: 'Error al actualizar: ' + error.message });
+  }
 });
 
 // DELETE: Eliminar producto (Protegido por rol Administrador)
