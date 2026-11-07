@@ -7,7 +7,14 @@ const authMiddleware = typeof authImport === 'function'
   ? authImport 
   : (authImport.authMiddleware || ((req, res, next) => next()));
 
-// GET /api/cotizaciones - Devuelve todos los alias posibles de propiedades
+// Función auxiliar para garantizar un string de fecha ISO válido
+const obtenerFechaValida = (fechaRaw) => {
+  if (!fechaRaw) return new Date().toISOString();
+  const date = new Date(fechaRaw);
+  return isNaN(date.getTime()) ? new Date().toISOString() : date.toISOString();
+};
+
+// GET /api/cotizaciones - Estandariza cliente, email, teléfono, mensaje y fecha
 router.get('/', authMiddleware, async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM cotizaciones ORDER BY id DESC');
@@ -17,7 +24,9 @@ router.get('/', authMiddleware, async (req, res) => {
       const valEmail = row.email || row.correo || row.email_cliente || '';
       const valTelefono = row.telefono || row.celular || row.whatsapp || '';
       const valMensaje = row.mensaje || row.consulta || row.detalle || row.descripcion || '';
-      const valFecha = row.fecha || row.fecha_creacion || row.created_at || row.createdAt || new Date();
+      
+      const rawFecha = row.fecha || row.fecha_creacion || row.created_at || row.createdAt;
+      const valFecha = obtenerFechaValida(rawFecha);
 
       return {
         ...row,
@@ -33,7 +42,8 @@ router.get('/', authMiddleware, async (req, res) => {
         consulta: valMensaje,
         fecha: valFecha,
         created_at: valFecha,
-        fecha_creacion: valFecha
+        fecha_creacion: valFecha,
+        createdAt: valFecha
       };
     });
 
@@ -74,6 +84,10 @@ router.post('/', async (req, res) => {
 
     const msgCol = dbCols.find(c => ['mensaje', 'consulta', 'detalle', 'descripcion'].includes(c.toLowerCase()));
     if (msgCol) fieldsToInsert[msgCol] = valMensaje;
+
+    // Guardar fecha actual si existe la columna de fecha en MySQL
+    const dateCol = dbCols.find(c => ['fecha', 'created_at', 'fecha_creacion', 'createdat'].includes(c.toLowerCase()));
+    if (dateCol) fieldsToInsert[dateCol] = new Date();
 
     const keys = Object.keys(fieldsToInsert);
     const values = Object.values(fieldsToInsert);
