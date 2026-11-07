@@ -18,7 +18,7 @@ router.get('/', authMiddleware, async (req, res) => {
   }
 });
 
-// POST /api/cotizaciones - Inserción dinámica con prueba de columnas
+// POST /api/cotizaciones - Inserción dinámica por inspección de esquema
 router.post('/', async (req, res) => {
   const { nombre, cliente_nombre, cliente, email, correo, telefono, mensaje, consulta } = req.body;
 
@@ -31,27 +31,47 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ mensaje: 'Nombre y mensaje son obligatorios.' });
   }
 
-  // Lista de posibles variantes de columnas en MySQL
-  const intentos = [
-    { sql: 'INSERT INTO cotizaciones (nombre, email, telefono, mensaje) VALUES (?, ?, ?, ?)', params: [valNombre, valEmail, valTelefono, valMensaje] },
-    { sql: 'INSERT INTO cotizaciones (cliente_nombre, email, telefono, mensaje) VALUES (?, ?, ?, ?)', params: [valNombre, valEmail, valTelefono, valMensaje] },
-    { sql: 'INSERT INTO cotizaciones (cliente, email, telefono, mensaje) VALUES (?, ?, ?, ?)', params: [valNombre, valEmail, valTelefono, valMensaje] },
-    { sql: 'INSERT INTO cotizaciones (nombre, correo, telefono, mensaje) VALUES (?, ?, ?, ?)', params: [valNombre, valEmail, valTelefono, valMensaje] },
-    { sql: 'INSERT INTO cotizaciones (nombre, email, telefono, consulta) VALUES (?, ?, ?, ?)', params: [valNombre, valEmail, valTelefono, valMensaje] }
-  ];
+  try {
+    // 1. Leer las columnas reales existentes en la tabla cotizaciones de Clever Cloud
+    const [columns] = await db.query('SHOW COLUMNS FROM cotizaciones');
+    const dbCols = columns.map(c => c.Field);
 
-  let ultimoError = null;
-  for (const intento of intentos) {
-    try {
-      await db.query(intento.sql, intento.params);
-      return res.status(201).json({ mensaje: 'Cotización enviada con éxito' });
-    } catch (err) {
-      ultimoError = err;
+    // 2. Mapear automáticamente los datos a los nombres reales de las columnas
+    const fieldsToInsert = {};
+
+    // Mapear nombre
+    const nameCol = dbCols.find(c => ['nombre', 'cliente_nombre', 'nombre_cliente', 'cliente'].includes(c.toLowerCase()));
+    if (nameCol) fieldsToInsert[nameCol] = valNombre;
+
+    // Mapear email
+    const emailCol = dbCols.find(c => ['email', 'correo', 'email_cliente'].includes(c.toLowerCase()));
+    if (emailCol) fieldsToInsert[emailCol] = valEmail;
+
+    // Mapear teléfono
+    const phoneCol = dbCols.find(c => ['telefono', 'celular', 'whatsapp', 'telefono_cliente'].includes(c.toLowerCase()));
+    if (phoneCol) fieldsToInsert[phoneCol] = valTelefono;
+
+    // Mapear mensaje
+    const msgCol = dbCols.find(c => ['mensaje', 'consulta', 'detalle', 'descripcion'].includes(c.toLowerCase()));
+    if (msgCol) fieldsToInsert[msgCol] = valMensaje;
+
+    const keys = Object.keys(fieldsToInsert);
+    const values = Object.values(fieldsToInsert);
+
+    if (keys.length === 0) {
+      return res.status(500).json({ mensaje: 'No se encontraron columnas válidas en la tabla cotizaciones.' });
     }
-  }
 
-  console.error('Error MySQL POST cotizaciones:', ultimoError?.message);
-  res.status(500).json({ mensaje: 'Error BD: ' + (ultimoError?.message || 'Error desconocido') });
+    const placeholders = keys.map(() => '?').join(', ');
+    const sql = `INSERT INTO cotizaciones (${keys.join(', ')}) VALUES (${placeholders})`;
+
+    await db.query(sql, values);
+    res.status(201).json({ mensaje: 'Cotización enviada con éxito' });
+
+  } catch (error) {
+    console.error('Error MySQL POST cotizaciones:', error.message);
+    res.status(500).json({ mensaje: 'Error al registrar la cotización: ' + error.message });
+  }
 });
 
 // DELETE /api/cotizaciones
