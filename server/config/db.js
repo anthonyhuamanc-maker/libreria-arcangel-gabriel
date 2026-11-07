@@ -9,19 +9,17 @@ const pool = mysql.createPool({
   port: process.env.DB_PORT || 3306,
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0,
-  ssl: {
-    rejectUnauthorized: false
-  }
+  queueLimit: 0
 });
 
-pool.getConnection((err, connection) => {
-  if (err) {
-    console.error('❌ Error conectando a MySQL:', err.message);
-  } else {
+// Prueba de conexión usando Promesas (sin callbacks)
+pool.getConnection()
+  .then(connection => {
     console.log('✅ Conexión exitosa a MySQL en Clever Cloud');
     connection.release();
-  }
-});
+  })
+  .catch(err => {
+    console.error('❌ Error de conexión a MySQL:', err.message);
+  });
 
 module.exports = pool;
