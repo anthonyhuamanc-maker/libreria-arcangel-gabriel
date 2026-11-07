@@ -7,11 +7,21 @@ const authMiddleware = typeof authImport === 'function'
   ? authImport 
   : (authImport.authMiddleware || ((req, res, next) => next()));
 
-// GET /api/cotizaciones
+// GET /api/cotizaciones - Estandariza las columnas devueltas hacia el frontend
 router.get('/', authMiddleware, async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM cotizaciones ORDER BY id DESC');
-    res.json(rows);
+    
+    const cotizacionesEstandarizadas = rows.map(row => ({
+      id: row.id,
+      nombre: row.nombre || row.cliente_nombre || row.nombre_cliente || row.cliente || 'Sin nombre',
+      telefono: row.telefono || row.celular || row.whatsapp || '',
+      email: row.email || row.correo || row.email_cliente || '',
+      mensaje: row.mensaje || row.consulta || row.detalle || row.descripcion || '',
+      fecha: row.fecha || row.fecha_creacion || row.created_at || row.createdAt || new Date().toISOString()
+    }));
+
+    res.json(cotizacionesEstandarizadas);
   } catch (error) {
     console.error('Error MySQL GET cotizaciones:', error.message);
     res.status(500).json({ mensaje: 'Error al obtener cotizaciones: ' + error.message });
@@ -32,26 +42,20 @@ router.post('/', async (req, res) => {
   }
 
   try {
-    // 1. Leer las columnas reales existentes en la tabla cotizaciones de Clever Cloud
     const [columns] = await db.query('SHOW COLUMNS FROM cotizaciones');
     const dbCols = columns.map(c => c.Field);
 
-    // 2. Mapear automáticamente los datos a los nombres reales de las columnas
     const fieldsToInsert = {};
 
-    // Mapear nombre
     const nameCol = dbCols.find(c => ['nombre', 'cliente_nombre', 'nombre_cliente', 'cliente'].includes(c.toLowerCase()));
     if (nameCol) fieldsToInsert[nameCol] = valNombre;
 
-    // Mapear email
     const emailCol = dbCols.find(c => ['email', 'correo', 'email_cliente'].includes(c.toLowerCase()));
     if (emailCol) fieldsToInsert[emailCol] = valEmail;
 
-    // Mapear teléfono
     const phoneCol = dbCols.find(c => ['telefono', 'celular', 'whatsapp', 'telefono_cliente'].includes(c.toLowerCase()));
     if (phoneCol) fieldsToInsert[phoneCol] = valTelefono;
 
-    // Mapear mensaje
     const msgCol = dbCols.find(c => ['mensaje', 'consulta', 'detalle', 'descripcion'].includes(c.toLowerCase()));
     if (msgCol) fieldsToInsert[msgCol] = valMensaje;
 
