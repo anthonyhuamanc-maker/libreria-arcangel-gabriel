@@ -15,7 +15,7 @@ async function cargarCotizaciones() {
     if (!token || !tablaBody) return;
 
     try {
-        const response = await fetch('http://localhost:5000/api/cotizaciones', {
+        const response = await fetch('https://libreria-arcangel-gabriel-44ro.onrender.com/api/cotizaciones', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -68,7 +68,7 @@ async function limpiarCotizaciones() {
     if (!confirm('¿Estás seguro de que deseas borrar todo el historial de solicitudes?')) return;
 
     try {
-        const response = await fetch('http://localhost:5000/api/cotizaciones', {
+        const response = await fetch('https://libreria-arcangel-gabriel-44ro.onrender.com/api/cotizaciones', {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`

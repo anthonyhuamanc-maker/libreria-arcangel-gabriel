@@ -12,7 +12,7 @@ async function cargarProductos() {
     if (!tablaBody) return;
 
     try {
-        const response = await fetch('http://localhost:5000/api/productos');
+        const response = await fetch('https://libreria-arcangel-gabriel-44ro.onrender.com/api/productos');
         const productos = await response.json();
 
         // 1. Actualizar métricas del panel
@@ -96,7 +96,7 @@ async function guardarProducto(e) {
     const detalle = document.getElementById('detalleProducto').value.trim();
 
     const payload = { nombre, categoria, precio, stock: Number(stock), detalle };
-    const url = id ? `http://localhost:5000/api/productos/${id}` : 'http://localhost:5000/api/productos';
+    const url = id ? `https://libreria-arcangel-gabriel-44ro.onrender.com/api/productos/${id}` : 'https://libreria-arcangel-gabriel-44ro.onrender.com/api/productos';
     const method = id ? 'PUT' : 'POST';
 
     try {
@@ -148,7 +148,7 @@ async function eliminarProducto(id) {
     if (!confirm('¿Deseas eliminar este producto?')) return;
 
     try {
-        const res = await fetch(`http://localhost:5000/api/productos/${id}`, {
+        const res = await fetch(`https://libreria-arcangel-gabriel-44ro.onrender.com/api/productos/${id}`, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }
         });
