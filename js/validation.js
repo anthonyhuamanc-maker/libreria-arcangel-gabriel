@@ -22,12 +22,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                    body: JSON.stringify({
-                    nombre: nombre,
-                    cliente_nombre: nombre,
-                    telefono: telefono,
-                    email: email || 'Sin correo',
-                    mensaje: mensaje
-                    })
+          nombre: nombre,
+          cliente_nombre: nombre,
+          telefono: telefono,
+          email: email,
+          mensaje: mensaje
+        })
                 });
 
                 const data = await response.json();
