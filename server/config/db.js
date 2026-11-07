@@ -1,4 +1,4 @@
-const mysql = require('mysql2/promise');
+const mysql = require('mysql2');
 require('dotenv').config();
 
 const pool = mysql.createPool({
@@ -12,14 +12,16 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
-// Prueba de conexión usando Promesas (sin callbacks)
-pool.getConnection()
+// Convertir explícitamente el pool para soportar async / await (Promises)
+const promisePool = pool.promise();
+
+promisePool.getConnection()
   .then(connection => {
-    console.log('✅ Conexión exitosa a MySQL en Clever Cloud');
+    console.log('🟢 Conexión exitosa a MySQL en Clever Cloud');
     connection.release();
   })
   .catch(err => {
     console.error('❌ Error de conexión a MySQL:', err.message);
   });
 
-module.exports = pool;
+module.exports = promisePool;
