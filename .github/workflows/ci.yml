@@ -17,7 +17,15 @@ jobs:
         node-version: '18.x'
     
     - name: Instalar dependencias
-      run: cd server && npm install
+      run: |
+        npm install
+        cd server && npm install
     
     - name: Ejecutar pruebas
+      env:
+        JWT_SECRET: clave_secreta_de_prueba
+        DB_HOST: localhost
+        DB_USER: root
+        DB_PASSWORD: ""
+        DB_NAME: test_db
       run: cd server && npm test
