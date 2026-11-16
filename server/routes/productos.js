@@ -3,12 +3,11 @@ const router = express.Router();
 const db = require('../config/db');
 const authImport = require('../middleware/authMiddleware');
 
-// Validar la exportación del middleware para evitar errores de arranque en Express
-const authMiddleware = typeof authImport === 'function'
-  ? authImport
-  : (authImport.authMiddleware || authImport.verifyToken || ((req, res, next) => next()));
+const authMiddleware = typeof authImport === 'function' 
+  ? authImport 
+  : (authImport.authMiddleware || ((req, res, next) => next()));
 
-// GET /api/productos - Obtener todos los productos
+// GET /api/productos
 router.get('/', async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM productos ORDER BY id DESC');
@@ -19,7 +18,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST /api/productos - Crear un producto
+// POST /api/productos
 router.post('/', authMiddleware, async (req, res) => {
   const { nombre, categoria, detalle, stock, precio } = req.body;
 
@@ -39,7 +38,6 @@ router.post('/', authMiddleware, async (req, res) => {
         [nombre, categoria, detalle, Number(stock), precio]
       );
     }
-
     res.status(201).json({ mensaje: 'Producto creado exitosamente' });
   } catch (error) {
     console.error('Error MySQL POST:', error.message);
@@ -47,7 +45,7 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 });
 
-// PUT /api/productos/:id - Actualizar un producto
+// PUT /api/productos/:id
 router.put('/:id', authMiddleware, async (req, res) => {
   const { id } = req.params;
   const { nombre, categoria, detalle, stock, precio } = req.body;
@@ -68,7 +66,6 @@ router.put('/:id', authMiddleware, async (req, res) => {
         [nombre, categoria, detalle, Number(stock), precio, id]
       );
     }
-
     res.json({ mensaje: 'Producto actualizado exitosamente' });
   } catch (error) {
     console.error('Error MySQL PUT:', error.message);
@@ -76,10 +73,9 @@ router.put('/:id', authMiddleware, async (req, res) => {
   }
 });
 
-// DELETE /api/productos/:id - Eliminar un producto
+// DELETE /api/productos/:id
 router.delete('/:id', authMiddleware, async (req, res) => {
   const { id } = req.params;
-
   try {
     const [result] = await db.query('DELETE FROM productos WHERE id = ?', [id]);
     if (result.affectedRows === 0) {

@@ -27,6 +27,10 @@ app.get('/', (req, res) => {
     res.send('API REST de Librería Arcángel Gabriel funcionando correctamente');
 });
 
-app.listen(PORT, () => {
-    console.log(`🚀 Servidor ejecutándose en http://localhost:${PORT}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(PORT, () => {
+        console.log(`🚀 Servidor ejecutándose en http://localhost:${PORT}`);
+    });
+}
+
+module.exports = app;
